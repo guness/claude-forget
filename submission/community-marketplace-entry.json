@@ -1,0 +1,20 @@
+{
+  "name": "claude-forget",
+  "displayName": "Claude Forget",
+  "source": {
+    "source": "github",
+    "repo": "guness/claude-forget",
+    "ref": "v0.1.0"
+  },
+  "description": "Adds /forget — pairs with /clear to wipe the slate: clears context and permanently deletes the current session's transcript and the project memory, so it can't be resumed or listed.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Sinan GUNES",
+    "email": "claude@sinangunes.com"
+  },
+  "homepage": "https://github.com/guness/claude-forget#readme",
+  "repository": "https://github.com/guness/claude-forget",
+  "license": "MIT",
+  "keywords": ["session", "privacy", "cleanup", "clear", "forget", "history"],
+  "category": "productivity"
+}
