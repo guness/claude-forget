@@ -4,6 +4,13 @@ All notable changes to this project are documented here. This project adheres to
 [Semantic Versioning](https://semver.org/) and the
 [Keep a Changelog](https://keepachangelog.com/) format.
 
+## [0.2.1] - 2026-06-02
+
+### Fixed
+- Hook load failure on Claude Code 2.1.x (`expected record, received undefined`
+  at `hooks`): `hooks/hooks.json` now wraps the event map under a top-level
+  `"hooks"` key, matching the runtime loader's schema. No behavior change.
+
 ## [0.2.0] - 2026-06-02
 
 ### Added
@@ -40,5 +47,6 @@ All notable changes to this project are documented here. This project adheres to
 - `FORGET_DRY_RUN=1` mode on the cleanup script for safe testing.
 - Self-hosted `marketplace.json` and community-marketplace submission entry.
 
+[0.2.1]: https://github.com/guness/claude-forget/releases/tag/v0.2.1
 [0.2.0]: https://github.com/guness/claude-forget/releases/tag/v0.2.0
 [0.1.0]: https://github.com/guness/claude-forget/releases/tag/v0.1.0
