@@ -178,26 +178,42 @@ def drop_flag():
         print("[dry-run] would remove flag:", FLAG)
 
 
+def update_flag(extra):
+    """Keep the flag but merge in extra fields (so the next SessionStart can
+    finish cleaning up — e.g. the one-line ghost transcript /exit leaves behind)."""
+    if DRY:
+        print("[dry-run] keep flag, set:", extra)
+        return
+    try:
+        d = json.load(open(FLAG))
+        d.update(extra)
+        atomic_write(FLAG, json.dumps(d))
+    except Exception:
+        pass
+
+
 # ===========================================================================
 # SESSION SCOPE
 # ===========================================================================
 if scope == "session":
     f_mem = flag.get("memory_dir", "")
+    # finalize=True  → remove the flag (job done, stable)
+    # finalize=False → keep the flag so the NEXT SessionStart re-runs and clears
+    #                  the one-line ghost transcript that /exit recreates post-hook.
     if event == "SessionStart":
-        if source == "clear":
-            if same_as_active:
-                done()
-        elif source == "resume":
-            if same_as_active:
-                drop_flag()
+        if source == "compact":
+            done()                       # same session continues mid-flight
+        if same_as_active:
+            if source == "resume":
+                drop_flag()              # resumed the armed session → cancel
             done()
-        else:
-            done()
+        finalize = True                  # startup / clear / resume-other → armed is closed
     elif event == "SessionEnd":
         if ev_sid and f_sid and ev_sid != f_sid:
             done()
         if (not ev_sid) and ev_tx and not same_as_active:
             done()
+        finalize = False                 # delete now, but keep flag for the ghost sweep
     else:
         done()
 
@@ -210,7 +226,7 @@ if scope == "session":
         rm(os.path.join(CLAUDE_DIR, "session-env", sid), "session-env")
         scrub_jsonl(HISTORY, lambda o: o.get("sessionId") == sid, "history.jsonl")
     rm(f_mem, "project memory")
-    drop_flag()
+    drop_flag() if finalize else update_flag({"ghost_sweep": True})
     done()
 
 
@@ -219,25 +235,33 @@ if scope == "session":
 # ===========================================================================
 project_dir = flag.get("project_dir", "")
 cwd = f_cwd
+heavy_done = flag.get("heavy_done", False)
 
 # Decide whether (and how) to fire.
 preserve_sid = None
 preserve_tx = None
+finalize = True
 if event == "SessionEnd":
     if not ((f_sid and ev_sid and ev_sid == f_sid)
             or (ev_tx and rp(ev_tx) == rp(f_tx))
             or (not ev_sid and not ev_tx)):
         done()  # a different session ended; not the one that armed the nuke
+    finalize = False  # nuke now, but keep flag so the next start sweeps the ghost
 elif event == "SessionStart":
     if source == "resume" and same_as_active:
         drop_flag()  # user resumed the armed session → cancel the nuke
         done()
     if source in ("startup", "resume"):
-        preserve_sid, preserve_tx = ev_sid, ev_tx  # crash recovery: keep new session
+        preserve_sid, preserve_tx = ev_sid, ev_tx  # keep the new session
     else:
         done()  # /clear and compact do NOT complete a project nuke
 else:
     done()
+
+# On the follow-up ghost sweep (SessionEnd already did the heavy global scrubs)
+# only clean leftover transcripts/per-session refs — do NOT re-scrub global config,
+# so the freshly-reopened project's new ~/.claude.json entry is left intact.
+do_globals = not heavy_done
 
 ids = fc.project_session_ids(project_dir, HISTORY, cwd)
 if preserve_sid:
@@ -270,20 +294,21 @@ if os.path.isdir(SESSIONS):
         if cwd in txt and not (preserve_sid and preserve_sid in txt):
             rm(p, "sessions map")
 
-# 4) prompt history lines for this project (keep the preserved session's, if any)
-scrub_jsonl(HISTORY,
-            lambda o: o.get("project") == cwd and o.get("sessionId") != preserve_sid,
-            "history.jsonl")
+if do_globals:
+    # 4) prompt history lines for this project (keep the preserved session's, if any)
+    scrub_jsonl(HISTORY,
+                lambda o: o.get("project") == cwd and o.get("sessionId") != preserve_sid,
+                "history.jsonl")
 
-# 5) ~/.claude.json project entry (best-effort; backed up first)
-remove_project_from_json(CLAUDE_JSON, cwd, "~/.claude.json", backup=True)
+    # 5) ~/.claude.json project entry (best-effort; backed up first)
+    remove_project_from_json(CLAUDE_JSON, cwd, "~/.claude.json", backup=True)
 
-# 6) security audit log lines mentioning the path
-scrub_text_lines(SECLOG, cwd, "security/log.txt")
+    # 6) security audit log lines mentioning the path
+    scrub_text_lines(SECLOG, cwd, "security/log.txt")
 
-# 7) strip the project entry from rotating ~/.claude.json backups
-for bp in fc.backups_with_project(BACKUPS, cwd):
-    remove_project_from_json(bp, cwd, f"backup {os.path.basename(bp)}")
+    # 7) strip the project entry from rotating ~/.claude.json backups
+    for bp in fc.backups_with_project(BACKUPS, cwd):
+        remove_project_from_json(bp, cwd, f"backup {os.path.basename(bp)}")
 
-drop_flag()
+drop_flag() if finalize else update_flag({"heavy_done": True})
 done()

@@ -4,6 +4,17 @@ All notable changes to this project are documented here. This project adheres to
 [Semantic Versioning](https://semver.org/) and the
 [Keep a Changelog](https://keepachangelog.com/) format.
 
+## [0.2.2] - 2026-06-02
+
+### Fixed
+- `/exit` after arming left a one-line "ghost" session containing only `/exit`:
+  the `SessionEnd` hook deleted the transcript, but Claude flushed the `/exit`
+  event afterward, recreating it. The flag is now kept through `SessionEnd` and
+  the next `SessionStart` sweeps the ghost and clears the flag. For project
+  scope, that follow-up sweep is light (transcripts/per-session refs only) and
+  does **not** re-scrub global config, so a reopened project keeps its fresh
+  `~/.claude.json` entry.
+
 ## [0.2.1] - 2026-06-02
 
 ### Fixed
@@ -47,6 +58,7 @@ All notable changes to this project are documented here. This project adheres to
 - `FORGET_DRY_RUN=1` mode on the cleanup script for safe testing.
 - Self-hosted `marketplace.json` and community-marketplace submission entry.
 
+[0.2.2]: https://github.com/guness/claude-forget/releases/tag/v0.2.2
 [0.2.1]: https://github.com/guness/claude-forget/releases/tag/v0.2.1
 [0.2.0]: https://github.com/guness/claude-forget/releases/tag/v0.2.0
 [0.1.0]: https://github.com/guness/claude-forget/releases/tag/v0.1.0
