@@ -2,23 +2,27 @@
 
 A Claude Code plugin for deliberately erasing your footprint:
 
-- **`/forget`** — wipe the current **session**: clears context (via `/clear`) and
-  permanently deletes this session's transcript and the project's memory, so the
+- **`/forget:session`** — wipe the current **session**: clears context (via `/clear`)
+  and permanently deletes this session's transcript and the project's memory, so the
   conversation can't be resumed, won't appear in `/resume`, and leaves no trace.
-- **`/forget-project`** — nuke the whole **project** from the Claude realm: removes
+- **`/forget:project`** — nuke the whole **project** from the Claude realm: removes
   *every* reference to this project (all sessions, memory, prompt history,
   per-session state, the `~/.claude.json` entry, security audit-log lines, and config
   backups). Your actual source files are never touched.
+- **`/forget:cancel`** — disarm whatever is pending (session or project).
+
+> Commands are namespaced by the plugin name `forget`, so they read as
+> `/forget:session`, `/forget:project`, `/forget:cancel`.
 
 ## How it works
 
 A slash command cannot reset the context window or restart Claude Code on its own —
 only **you** typing `/clear` resets context, and deleting the *live* transcript
-mid-session doesn't stick (Claude Code keeps re-writing it). So `/forget` is a small
-two-piece system that works *with* those constraints:
+mid-session doesn't stick (Claude Code keeps re-writing it). So `/forget:session` is a
+small two-piece system that works *with* those constraints:
 
 ```
-/forget            → ARMS the wipe for this session (writes a flag; deletes nothing yet)
+/forget:session    → ARMS the wipe for this session (writes a flag; deletes nothing yet)
    ↓
 /clear  (or close) → a hook fires and DELETES:
                        • the session transcript (.jsonl, .jsonl.meta, and its
@@ -38,45 +42,48 @@ From the self-hosted marketplace:
 
 ```text
 /plugin marketplace add guness/claude-forget
-/plugin install claude-forget@claude-forget
+/plugin install forget@claude-forget
 ```
 
 Or, once listed on Anthropic's community marketplace:
 
 ```text
 /plugin marketplace add anthropics/claude-plugins-community
-/plugin install claude-forget@claude-community
+/plugin install forget@claude-community
 ```
 
 Local development / testing (from a clone):
 
 ```text
 /plugin marketplace add ./claude-forget
-/plugin install claude-forget@claude-forget
+/plugin install forget@claude-forget
 ```
+
+> The marketplace is `claude-forget`; the plugin inside it is `forget` — hence
+> `forget@claude-forget`.
 
 ## Usage
 
-### `/forget` — current session
+### `/forget:session` — current session
 
 ```
-/forget          Arm the wipe for the current session.
-/forget cancel   Back out (the only safe way to abort).
+/forget:session   Arm the wipe for the current session.
+/forget:cancel    Back out (the only safe way to abort).
 ```
 
-After `/forget`, press **`/clear`** to confirm and start fresh.
+After `/forget:session`, press **`/clear`** to confirm and start fresh.
 
 > ⚠️ Once armed, **closing the session also triggers the wipe.** Not pressing
-> `/clear` is *not* an abort — use `/forget cancel`.
+> `/clear` is *not* an abort — use `/forget:cancel`.
 
-### `/forget-project` — whole project (☢️ destructive)
+### `/forget:project` — whole project (☢️ destructive)
 
 ```
-/forget-project          Arm the project nuke (prints a full inventory first).
-/forget-project cancel   Back out.
+/forget:project   Arm the project nuke (prints a full inventory first).
+/forget:cancel    Back out.
 ```
 
-After `/forget-project`, **close the session** (`Ctrl+D` / `/exit`) to execute —
+After `/forget:project`, **close the session** (`Ctrl+D` / `/exit`) to execute —
 the nuke runs on `SessionEnd`.
 
 > ⚠️ **`/clear` does NOT complete a project nuke.** A live `/clear` keeps the same
@@ -97,10 +104,10 @@ the nuke runs on `SessionEnd`.
 Not touched: other sessions' transcripts, and `sessions/*.json` / `shell-snapshots/`
 (keyed by PID/timestamp, not safely mappable to a session).
 
-## What gets deleted (scope: whole project — `/forget-project`)
+## What gets deleted (scope: whole project — `/forget:project`)
 
 Session IDs are gathered from the project dir **and** `history.jsonl`, so even
-already-`/forget`-ed sessions are cleaned up.
+already-`/forget:session`-ed sessions are cleaned up.
 
 | Item | Path |
 |------|------|
@@ -126,7 +133,7 @@ already-`/forget`-ed sessions are cleaned up.
   A `/clear` in a *second* terminal of the same project could trigger the armed
   wipe early. `SessionEnd` is scoped to the exact session to avoid this; `/clear`
   is not fully scopable. Uncommon, but noted.
-- **Memory dir:** `/forget` removes the whole project memory directory (memory is
+- **Memory dir:** `/forget:session` removes the whole project memory directory (memory is
   project-level, not per-session). Claude Code recreates it on next use.
 - **`~/.claude.json` entry (project nuke):** editing the global config races with
   the live process, so the edit is best-effort and backed up first. The entry may
@@ -152,8 +159,9 @@ claude-forget/
 │   ├── plugin.json
 │   └── marketplace.json
 ├── commands/
-│   ├── forget.md                # /forget         → session scope
-│   └── forget-project.md        # /forget-project → project scope
+│   ├── session.md               # /forget:session
+│   ├── project.md               # /forget:project
+│   └── cancel.md                # /forget:cancel
 └── hooks/
     ├── hooks.json               # SessionStart + SessionEnd
     └── scripts/

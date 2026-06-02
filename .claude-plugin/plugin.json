@@ -1,9 +1,9 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
-  "name": "claude-forget",
-  "displayName": "Claude Forget",
-  "version": "0.2.2",
-  "description": "Adds /forget (wipe the current session) and /forget-project (nuke every Claude-realm reference to the whole project). Never touches your source files.",
+  "name": "forget",
+  "displayName": "Forget",
+  "version": "0.3.0",
+  "description": "Adds /forget:session (wipe the current session), /forget:project (nuke every Claude-realm reference to the whole project), and /forget:cancel. Never touches your source files.",
   "author": {
     "name": "Sinan GUNES",
     "email": "claude@sinangunes.com",

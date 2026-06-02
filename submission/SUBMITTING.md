@@ -5,9 +5,9 @@ This repo is **both** a valid standalone plugin and a self-hostable marketplace.
 ## Prerequisites (one time)
 
 1. Create the GitHub repo `guness/claude-forget` and push this directory.
-2. Tag the release so sources that pin `ref: v0.2.2` resolve:
+2. Tag the release so sources that pin `ref: v0.3.0` resolve:
    ```bash
-   git tag v0.2.2
+   git tag v0.3.0
    git push origin main --tags
    ```
 3. Validate before publishing:
@@ -21,7 +21,7 @@ Users add your repo as a marketplace and install:
 
 ```text
 /plugin marketplace add guness/claude-forget
-/plugin install claude-forget@claude-forget
+/plugin install forget@claude-forget
 ```
 
 The manifest lives at `.claude-plugin/marketplace.json` (plugin `source: "./"`).
@@ -34,7 +34,7 @@ The community marketplace is curated via pull request to
 1. Fork that repo.
 2. Add the entry from [`community-marketplace-entry.json`](./community-marketplace-entry.json)
    to the `plugins` array in its `.claude-plugin/marketplace.json`.
-   (It uses a `github` source pinned to `v0.2.2`, so the tag above must exist.)
+   (It uses a `github` source pinned to `v0.3.0`, so the tag above must exist.)
 3. From the fork root, validate:
    ```bash
    claude plugin validate .
@@ -42,7 +42,7 @@ The community marketplace is curated via pull request to
 4. Open a PR. On merge, users install with:
    ```text
    /plugin marketplace add anthropics/claude-plugins-community
-   /plugin install claude-forget@claude-community
+   /plugin install forget@claude-community
    ```
 
 > The **official** Anthropic marketplace (`claude-plugins-official`) is curated by

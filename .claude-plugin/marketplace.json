@@ -1,19 +1,19 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-marketplace-manifest.json",
   "name": "claude-forget",
-  "description": "Self-hosted marketplace for the claude-forget plugin.",
-  "version": "0.2.2",
+  "description": "Self-hosted marketplace for the forget plugin.",
+  "version": "0.3.0",
   "owner": {
     "name": "Sinan GUNES",
     "email": "claude@sinangunes.com"
   },
   "plugins": [
     {
-      "name": "claude-forget",
-      "displayName": "Claude Forget",
+      "name": "forget",
+      "displayName": "Forget",
       "source": "./",
-      "description": "Adds /forget (wipe the current session) and /forget-project (nuke every Claude-realm reference to the whole project). Never touches your source files.",
-      "version": "0.2.2",
+      "description": "Adds /forget:session (wipe the current session), /forget:project (nuke every Claude-realm reference to the whole project), and /forget:cancel. Never touches your source files.",
+      "version": "0.3.0",
       "author": {
         "name": "Sinan GUNES",
         "email": "claude@sinangunes.com"

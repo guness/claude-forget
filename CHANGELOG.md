@@ -4,6 +4,26 @@ All notable changes to this project are documented here. This project adheres to
 [Semantic Versioning](https://semver.org/) and the
 [Keep a Changelog](https://keepachangelog.com/) format.
 
+## [0.3.0] - 2026-06-02
+
+### Changed (breaking)
+- Plugin renamed `claude-forget` → **`forget`**, so commands are now namespaced as
+  **`/forget:session`** and **`/forget:project`** (were `/claude-forget:forget` and
+  `/claude-forget:forget-project`). Command files renamed `forget.md`→`session.md`,
+  `forget-project.md`→`project.md`. The marketplace stays `claude-forget`; install
+  is now `/plugin install forget@claude-forget`.
+
+### Added
+- **`/forget:cancel`** — disarms whatever is pending (session or project) via the
+  single shared arm-flag. (`/forget:session cancel` / `/forget:project cancel` still
+  work too.)
+
+### Migration
+- Reinstall: `/plugin marketplace update claude-forget`, then
+  `/plugin uninstall claude-forget@claude-forget` and
+  `/plugin install forget@claude-forget`. Headless `enabledPlugins` key changes from
+  `claude-forget@claude-forget` to `forget@claude-forget`.
+
 ## [0.2.2] - 2026-06-02
 
 ### Fixed
@@ -58,6 +78,7 @@ All notable changes to this project are documented here. This project adheres to
 - `FORGET_DRY_RUN=1` mode on the cleanup script for safe testing.
 - Self-hosted `marketplace.json` and community-marketplace submission entry.
 
+[0.3.0]: https://github.com/guness/claude-forget/releases/tag/v0.3.0
 [0.2.2]: https://github.com/guness/claude-forget/releases/tag/v0.2.2
 [0.2.1]: https://github.com/guness/claude-forget/releases/tag/v0.2.1
 [0.2.0]: https://github.com/guness/claude-forget/releases/tag/v0.2.0

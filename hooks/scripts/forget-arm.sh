@@ -15,12 +15,13 @@ flag="${claude_dir}/forget-pending.json"
 scope="${1:-session}"
 arg="${2:-}"
 
-if [ "$arg" = "cancel" ]; then
+# Cancel disarms whatever is pending (session OR project) — there is one shared flag.
+if [ "$scope" = "cancel" ] || [ "$arg" = "cancel" ]; then
   if [ -f "$flag" ]; then
     rm -f "$flag"
-    echo "✗ Forget cancelled — nothing will be deleted."
+    echo "✗ Cancelled — the pending forget/nuke is disarmed. Nothing will be deleted."
   else
-    echo "Nothing was armed; nothing to cancel."
+    echo "Nothing is armed; nothing to cancel."
   fi
   exit 0
 fi
@@ -82,4 +83,4 @@ echo "   • memory     : ${mem_dir} (${mem_count} file(s))"
 echo
 echo "Press /clear to confirm: it wipes both and drops you into a fresh, 0-context session."
 echo "Closing the session also triggers the wipe."
-echo "To back out, run:  /forget cancel"
+echo "To back out, run:  /forget:cancel"
