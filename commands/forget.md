@@ -4,7 +4,7 @@ argument-hint: "[cancel]"
 allowed-tools: Bash(bash:*)
 ---
 
-!`bash "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/forget-arm.sh" "$ARGUMENTS"`
+!`bash "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/forget-arm.sh" session "$ARGUMENTS"`
 
 Relay the script output above to the user, then state these points concisely (do not run any other tools or take any other action):
 

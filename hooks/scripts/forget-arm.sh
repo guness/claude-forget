@@ -1,13 +1,19 @@
 #!/usr/bin/env bash
-# forget-arm.sh — arm (or cancel) a /forget wipe for the CURRENT session.
+# forget-arm.sh — arm (or cancel) a wipe for the CURRENT session or project.
 # Writes a reversible flag file; performs NO deletion. The actual wipe is done
-# by forget-cleanup.sh when this session is cleared (/clear) or closed.
+# by forget-cleanup.sh:
+#   scope=session  → on /clear or session close
+#   scope=project  → on session CLOSE (SessionEnd), or startup recovery
+#
+# Usage: forget-arm.sh <session|project> [cancel]
 set -uo pipefail
 
 claude_dir="${HOME}/.claude"
 projects_dir="${claude_dir}/projects"
 flag="${claude_dir}/forget-pending.json"
-arg="${1:-}"
+
+scope="${1:-session}"
+arg="${2:-}"
 
 if [ "$arg" = "cancel" ]; then
   if [ -f "$flag" ]; then
@@ -41,6 +47,17 @@ fi
 session_id="$(basename "$transcript" .jsonl)"
 proj_dir="$(dirname "$transcript")"
 mem_dir="${proj_dir}/memory"
+
+if [ "$scope" = "project" ]; then
+  # Write the project-scope flag and print a full inventory of what will go.
+  FORGET_FLAG="$flag" FORGET_CWD="$cwd" FORGET_TX="$transcript" \
+  FORGET_SID="$session_id" FORGET_PROJDIR="$proj_dir" FORGET_MEMDIR="$mem_dir" \
+  FORGET_CLAUDE_DIR="$claude_dir" \
+  python3 "$(dirname "$0")/forget-arm-project.py"
+  exit 0
+fi
+
+# --- session scope ----------------------------------------------------------
 mem_count=0
 if [ -d "$mem_dir" ]; then
   mem_count="$(find "$mem_dir" -type f 2>/dev/null | wc -l | tr -d ' ')"
@@ -51,6 +68,7 @@ import json, sys
 flag, transcript, session_id, cwd, mem_dir = sys.argv[1:6]
 with open(flag, "w") as fh:
     json.dump({
+        "scope": "session",
         "transcript": transcript,
         "session_id": session_id,
         "cwd": cwd,
