@@ -4,6 +4,13 @@ All notable changes to this project are documented here. This project adheres to
 [Semantic Versioning](https://semver.org/) and the
 [Keep a Changelog](https://keepachangelog.com/) format.
 
+## [0.3.1] - 2026-06-02
+
+### Changed
+- Reframed the description around privacy + decluttering `/resume` (prune throwaway
+  sessions), and refreshed keywords (`privacy`, `cleanup`, `session`, `resume`,
+  `forget`, `history`, `declutter`). Metadata only — no behavior change.
+
 ## [0.3.0] - 2026-06-02
 
 ### Changed (breaking)
@@ -78,6 +85,7 @@ All notable changes to this project are documented here. This project adheres to
 - `FORGET_DRY_RUN=1` mode on the cleanup script for safe testing.
 - Self-hosted `marketplace.json` and community-marketplace submission entry.
 
+[0.3.1]: https://github.com/guness/claude-forget/releases/tag/v0.3.1
 [0.3.0]: https://github.com/guness/claude-forget/releases/tag/v0.3.0
 [0.2.2]: https://github.com/guness/claude-forget/releases/tag/v0.2.2
 [0.2.1]: https://github.com/guness/claude-forget/releases/tag/v0.2.1

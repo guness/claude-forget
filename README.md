@@ -1,6 +1,7 @@
 # claude-forget
 
-A Claude Code plugin for deliberately erasing your footprint:
+Privacy cleanup for Claude Code — deliberately erase your footprint, and prune
+throwaway sessions so `/resume` stays short and clean:
 
 - **`/forget:session`** — wipe the current **session**: clears context (via `/clear`)
   and permanently deletes this session's transcript and the project's memory, so the

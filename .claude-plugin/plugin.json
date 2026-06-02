@@ -2,8 +2,8 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "forget",
   "displayName": "Forget",
-  "version": "0.3.0",
-  "description": "Adds /forget:session (wipe the current session), /forget:project (nuke every Claude-realm reference to the whole project), and /forget:cancel. Never touches your source files.",
+  "version": "0.3.1",
+  "description": "Privacy cleanup for Claude Code: erase a session or a whole project's footprint, and prune throwaway sessions so /resume stays short and clean — without ever touching your source files.",
   "author": {
     "name": "Sinan GUNES",
     "email": "claude@sinangunes.com",
@@ -12,6 +12,6 @@
   "homepage": "https://github.com/guness/claude-forget#readme",
   "repository": "https://github.com/guness/claude-forget",
   "license": "MIT",
-  "keywords": ["session", "privacy", "cleanup", "clear", "forget", "history"],
+  "keywords": ["privacy", "cleanup", "session", "resume", "forget", "history", "declutter"],
   "defaultEnabled": true
 }
