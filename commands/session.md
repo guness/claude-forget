@@ -1,10 +1,10 @@
 ---
 description: Forget this session — arms a wipe of this session's transcript + the project memory. Confirm with /clear (or by closing the session); you land in a fresh, 0-context session with no trace left.
 argument-hint: "[cancel]"
-allowed-tools: Bash(bash:*)
+allowed-tools: Bash(node:*)
 ---
 
-!`bash "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/forget-arm.sh" session "$ARGUMENTS"`
+!`node "${CLAUDE_PLUGIN_ROOT}/hooks/forget-arm.mjs" session "$ARGUMENTS"`
 
 Relay the script output above to the user, then state these points concisely (do not run any other tools or take any other action):
 

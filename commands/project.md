@@ -1,10 +1,10 @@
 ---
 description: Nuke this project from the Claude realm — arms deletion of EVERY reference to this project (all sessions, memory, history, per-session state, the ~/.claude.json entry, audit-log lines, and config backups). Close the session to execute. Does NOT touch your source files.
 argument-hint: "[cancel]"
-allowed-tools: Bash(bash:*)
+allowed-tools: Bash(node:*)
 ---
 
-!`bash "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/forget-arm.sh" project "$ARGUMENTS"`
+!`node "${CLAUDE_PLUGIN_ROOT}/hooks/forget-arm.mjs" project "$ARGUMENTS"`
 
 Relay the inventory printed above to the user, then state these points concisely (do not run any other tools or take any other action):
 

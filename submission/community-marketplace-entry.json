@@ -4,10 +4,10 @@
   "source": {
     "source": "github",
     "repo": "guness/claude-forget",
-    "ref": "v0.3.1"
+    "ref": "v0.4.0"
   },
   "description": "Privacy cleanup for Claude Code: erase a session or a whole project's footprint, and prune throwaway sessions so /resume stays short and clean — without ever touching your source files.",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "author": {
     "name": "Sinan GUNES",
     "email": "claude@sinangunes.com"

@@ -4,6 +4,18 @@ All notable changes to this project are documented here. This project adheres to
 [Semantic Versioning](https://semver.org/) and the
 [Keep a Changelog](https://keepachangelog.com/) format.
 
+## [0.4.0] - 2026-06-04
+
+### Changed
+- **Cross-platform port to Node.** The cleanup engine and arm/cancel logic were
+  rewritten from bash + python3 to dependency-free Node (`.mjs`), and hooks now use
+  the shell-free **exec form** (`command: "node"`). This removes the `bash` and
+  `python3` assumptions, so the plugin works on **macOS, Linux, and Windows** using
+  the Node runtime Claude Code already ships. No behavior change — verified against
+  the same session + project sandbox tests (dry-run and real-run).
+- Files: `hooks/scripts/*.sh|*.py` → `hooks/forget-arm.mjs`, `hooks/forget-cleanup.mjs`,
+  `hooks/forget-common.mjs`. Commands now invoke `node` instead of `bash`.
+
 ## [0.3.1] - 2026-06-02
 
 ### Changed
@@ -85,6 +97,7 @@ All notable changes to this project are documented here. This project adheres to
 - `FORGET_DRY_RUN=1` mode on the cleanup script for safe testing.
 - Self-hosted `marketplace.json` and community-marketplace submission entry.
 
+[0.4.0]: https://github.com/guness/claude-forget/releases/tag/v0.4.0
 [0.3.1]: https://github.com/guness/claude-forget/releases/tag/v0.3.1
 [0.3.0]: https://github.com/guness/claude-forget/releases/tag/v0.3.0
 [0.2.2]: https://github.com/guness/claude-forget/releases/tag/v0.2.2

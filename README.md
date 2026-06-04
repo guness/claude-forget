@@ -142,14 +142,21 @@ already-`/forget:session`-ed sessions are cleaned up.
   the project — which is the intended reset. This is why a project nuke fires on
   **close**, not `/clear`.
 
+## Requirements & platforms
+
+Works on **macOS, Linux, and Windows**. The hooks and commands run on **Node**
+(which Claude Code already bundles) with **no external dependencies** — no `bash`,
+no `python`. Hooks use the shell-free exec form, so nothing assumes a particular
+shell is installed.
+
 ## Testing the cleanup safely
 
-The cleanup script supports a dry run — it prints what it *would* delete instead of
-deleting:
+The cleanup engine supports a dry run — it prints what it *would* delete instead of
+deleting. Pipe a hook payload to it on stdin:
 
 ```bash
 echo '{"hook_event_name":"SessionStart","source":"clear","cwd":"'"$PWD"'","session_id":"NEW","transcript_path":"/tmp/NEW.jsonl"}' \
-  | FORGET_DRY_RUN=1 bash hooks/scripts/forget-cleanup.sh
+  | FORGET_DRY_RUN=1 node hooks/forget-cleanup.mjs
 ```
 
 ## Layout
@@ -160,15 +167,12 @@ claude-forget/
 │   ├── plugin.json
 │   └── marketplace.json
 ├── commands/
-│   ├── session.md               # /forget:session
-│   ├── project.md               # /forget:project
-│   └── cancel.md                # /forget:cancel
+│   ├── session.md            # /forget:session
+│   ├── project.md            # /forget:project
+│   └── cancel.md             # /forget:cancel
 └── hooks/
-    ├── hooks.json               # SessionStart + SessionEnd
-    └── scripts/
-        ├── forget-arm.sh        # arm/cancel (session or project)
-        ├── forget-arm-project.py# project inventory + flag
-        ├── forget-cleanup.sh    # hook entrypoint (thin wrapper)
-        ├── forget-cleanup.py    # cleanup engine (both scopes)
-        └── forget_common.py     # shared helpers
+    ├── hooks.json            # SessionStart + SessionEnd (exec form → node)
+    ├── forget-arm.mjs        # arm/cancel (session or project) + inventory
+    ├── forget-cleanup.mjs    # cleanup engine (both scopes)
+    └── forget-common.mjs     # shared helpers
 ```
