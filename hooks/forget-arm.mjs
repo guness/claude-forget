@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // forget-arm.mjs — arm (or cancel) a wipe for the CURRENT session or project.
-// Writes a reversible flag; performs NO deletion. forget-cleanup.mjs does the work.
+// Writes a reversible per-session flag; performs NO deletion. forget-cleanup.mjs
+// does the work. One flag file per session, so multiple armed sessions coexist.
 //   node forget-arm.mjs <session|project|cancel> [cancel]
 import fs from "node:fs";
 import path from "node:path";
@@ -8,21 +9,22 @@ import * as fc from "./forget-common.mjs";
 
 const CLAUDE_DIR = fc.CLAUDE_DIR;
 const PROJECTS = path.join(CLAUDE_DIR, "projects");
-const FLAG = path.join(CLAUDE_DIR, "forget-pending.json");
+const FLAG_DIR = fc.FLAG_DIR;
 
 const scope = process.argv[2] || "session";
 const arg = process.argv[3] || "";
 
 const out = (s) => process.stdout.write(s + "\n");
 
-// Cancel disarms whatever is pending (session OR project) — one shared flag.
+// Cancel disarms every pending wipe (session and project) across all sessions.
 if (scope === "cancel" || arg === "cancel") {
-  if (fs.existsSync(FLAG)) {
-    try { fs.rmSync(FLAG, { force: true }); } catch { /* ignore */ }
-    out("✗ Cancelled — the pending forget/nuke is disarmed. Nothing will be deleted.");
-  } else {
-    out("Nothing is armed; nothing to cancel.");
+  let n = 0;
+  for (const f of fc.listDir(FLAG_DIR)) {
+    if (!f.endsWith(".json")) continue;
+    try { fs.rmSync(path.join(FLAG_DIR, f), { force: true }); n++; } catch { /* ignore */ }
   }
+  if (n > 0) out(`✗ Cancelled — disarmed ${n} pending forget/nuke. Nothing will be deleted.`);
+  else out("Nothing is armed; nothing to cancel.");
   process.exit(0);
 }
 
@@ -36,6 +38,9 @@ if (!transcript || !fs.existsSync(transcript)) {
 const sessionId = path.basename(transcript).replace(/\.jsonl$/, "");
 const projDir = path.dirname(transcript);
 const memDir = path.join(projDir, "memory");
+
+try { fs.mkdirSync(FLAG_DIR, { recursive: true }); } catch { /* ignore */ }
+const flagPath = path.join(FLAG_DIR, `${sessionId}.json`);
 
 if (scope === "project") {
   const history = path.join(CLAUDE_DIR, "history.jsonl");
@@ -56,7 +61,7 @@ if (scope === "project") {
   const cjHas = !!(cj && cj.projects && typeof cj.projects === "object" &&
     Object.prototype.hasOwnProperty.call(cj.projects, cwd));
 
-  fs.writeFileSync(FLAG, JSON.stringify({
+  fs.writeFileSync(flagPath, JSON.stringify({
     scope: "project", cwd, transcript,
     session_id: sessionId, project_dir: projDir, memory_dir: memDir,
   }));
@@ -83,7 +88,7 @@ if (scope === "project") {
 
 // session scope
 const memCount = fc.countFiles(memDir);
-fs.writeFileSync(FLAG, JSON.stringify({
+fs.writeFileSync(flagPath, JSON.stringify({
   scope: "session", transcript, session_id: sessionId, cwd, memory_dir: memDir,
 }));
 

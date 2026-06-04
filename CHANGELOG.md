@@ -4,6 +4,17 @@ All notable changes to this project are documented here. This project adheres to
 [Semantic Versioning](https://semver.org/) and the
 [Keep a Changelog](https://keepachangelog.com/) format.
 
+## [0.4.1] - 2026-06-04
+
+### Fixed
+- **Multiple armed sessions are no longer dropped.** Arming `/forget:session` (or
+  `/forget:project`) in more than one session previously overwrote a single shared
+  flag file, so only the last-armed session was processed and the others survived
+  (visible later in `/resume`). Each armed session now gets its own flag under
+  `~/.claude/forget-pending/<session-id>.json`, and the cleanup hook iterates **all**
+  pending flags on every `SessionStart`/`SessionEnd` — so every armed session is
+  tracked and swept independently. `/forget:cancel` disarms all pending flags.
+
 ## [0.4.0] - 2026-06-04
 
 ### Changed
@@ -97,6 +108,7 @@ All notable changes to this project are documented here. This project adheres to
 - `FORGET_DRY_RUN=1` mode on the cleanup script for safe testing.
 - Self-hosted `marketplace.json` and community-marketplace submission entry.
 
+[0.4.1]: https://github.com/guness/claude-forget/releases/tag/v0.4.1
 [0.4.0]: https://github.com/guness/claude-forget/releases/tag/v0.4.0
 [0.3.1]: https://github.com/guness/claude-forget/releases/tag/v0.3.1
 [0.3.0]: https://github.com/guness/claude-forget/releases/tag/v0.3.0

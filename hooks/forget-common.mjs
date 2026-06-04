@@ -6,6 +6,21 @@ import path from "node:path";
 export const CLAUDE_DIR = path.join(os.homedir(), ".claude");
 export const CLAUDE_JSON = path.join(os.homedir(), ".claude.json");
 
+// One flag file per armed session lives here, so multiple armed sessions coexist.
+export const FLAG_DIR = path.join(CLAUDE_DIR, "forget-pending");
+
+// All currently-armed wipes: [{ path, data }], one per session.
+export function listPendingFlags() {
+  const out = [];
+  for (const n of listDir(FLAG_DIR)) {
+    if (!n.endsWith(".json")) continue;
+    const p = path.join(FLAG_DIR, n);
+    const d = readJSON(p);
+    if (d) out.push({ path: p, data: d });
+  }
+  return out;
+}
+
 export function readJSON(p) {
   try { return JSON.parse(fs.readFileSync(p, "utf8")); } catch { return null; }
 }

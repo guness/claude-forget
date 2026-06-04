@@ -5,9 +5,9 @@ This repo is **both** a valid standalone plugin and a self-hostable marketplace.
 ## Prerequisites (one time)
 
 1. Create the GitHub repo `guness/claude-forget` and push this directory.
-2. Tag the release so sources that pin `ref: v0.4.0` resolve:
+2. Tag the release so sources that pin `ref: v0.4.1` resolve:
    ```bash
-   git tag v0.4.0
+   git tag v0.4.1
    git push origin main --tags
    ```
 3. Validate before publishing:
@@ -34,7 +34,7 @@ The community marketplace is curated via pull request to
 1. Fork that repo.
 2. Add the entry from [`community-marketplace-entry.json`](./community-marketplace-entry.json)
    to the `plugins` array in its `.claude-plugin/marketplace.json`.
-   (It uses a `github` source pinned to `v0.4.0`, so the tag above must exist.)
+   (It uses a `github` source pinned to `v0.4.1`, so the tag above must exist.)
 3. From the fork root, validate:
    ```bash
    claude plugin validate .
